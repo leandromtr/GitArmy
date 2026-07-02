@@ -1,0 +1,152 @@
+Using launch settings from src\GitArmy.API\Properties\launchSettings.json...
+Building...
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5021
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\LeandroReis\Desktop\MyProj\GitArmy\src\GitArmy.API
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+      Failed to determine the https port for redirect.
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/balta-io
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/balta-io
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 556.3931ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 571.8933ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/balta-io/repos?per_page=100&type=owner
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/balta-io/repos?per_page=100&type=owner
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 811.4816ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 811.6859ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request POST https://api.github.com/graphql
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request POST https://api.github.com/graphql
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 52.4079ms - 403
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 52.5047ms - 403
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/balta-io/events?per_page=100&page=1
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/balta-io/events?per_page=100&page=1
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 352.0421ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 352.1588ms - 200
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (43ms) [Parameters=[@__username_0='?' (Size = 39)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [p].[Id], [p].[AccountAgeYears], [p].[Followers], [p].[ProcessedAt], [p].[PublicRepos], [p].[Score], [p].[SubstitutionYear], [p].[TotalCommitsLastYear], [p].[UniqueLanguages], [p].[Username]
+      FROM [Profiles] AS [p]
+      WHERE [p].[Username] = @__username_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [Profiles] SET [ProcessedAt] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/leandromtr
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/leandromtr
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 290.707ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 290.8457ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/leandromtr/repos?per_page=100&type=owner
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/leandromtr/repos?per_page=100&type=owner
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 501.8755ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 501.996ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request POST https://api.github.com/graphql
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request POST https://api.github.com/graphql
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 56.129ms - 403
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 56.2312ms - 403
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/leandromtr/events?per_page=100&page=1
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/leandromtr/events?per_page=100&page=1
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 359.4963ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 359.5636ms - 200
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__username_0='?' (Size = 39)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [p].[Id], [p].[AccountAgeYears], [p].[Followers], [p].[ProcessedAt], [p].[PublicRepos], [p].[Score], [p].[SubstitutionYear], [p].[TotalCommitsLastYear], [p].[UniqueLanguages], [p].[Username]
+      FROM [Profiles] AS [p]
+      WHERE [p].[Username] = @__username_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [Profiles] SET [ProcessedAt] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/filipedeschamps
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/filipedeschamps
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 300.0061ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 300.0912ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/filipedeschamps/repos?per_page=100&type=owner
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/filipedeschamps/repos?per_page=100&type=owner
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 466.1093ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 466.2072ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request POST https://api.github.com/graphql
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request POST https://api.github.com/graphql
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 51.1072ms - 403
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 51.2248ms - 403
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/filipedeschamps/events?per_page=100&page=1
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/filipedeschamps/events?per_page=100&page=1
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 519.7234ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 519.8114ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/users/filipedeschamps/events?per_page=100&page=2
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/users/filipedeschamps/events?per_page=100&page=2
+info: System.Net.Http.HttpClient.IGitHubClient.ClientHandler[101]
+      Received HTTP response headers after 331.4012ms - 200
+info: System.Net.Http.HttpClient.IGitHubClient.LogicalHandler[101]
+      End processing HTTP request after 331.5172ms - 200
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__username_0='?' (Size = 39)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [p].[Id], [p].[AccountAgeYears], [p].[Followers], [p].[ProcessedAt], [p].[PublicRepos], [p].[Score], [p].[SubstitutionYear], [p].[TotalCommitsLastYear], [p].[UniqueLanguages], [p].[Username]
+      FROM [Profiles] AS [p]
+      WHERE [p].[Username] = @__username_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (15ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [Profiles] SET [ProcessedAt] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;

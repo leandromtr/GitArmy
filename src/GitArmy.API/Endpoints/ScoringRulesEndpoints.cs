@@ -1,0 +1,64 @@
+using GitArmy.Application.Configuration;
+using Microsoft.Extensions.Options;
+
+namespace GitArmy.API.Endpoints;
+
+public static class ScoringRulesEndpoints
+{
+    public static IEndpointRouteBuilder MapScoringRulesEndpoints(this IEndpointRouteBuilder app)
+    {
+        app.MapGet("/api/scoring-rules", (IOptions<ScoringSettings> opts) =>
+        {
+            var s = opts.Value;
+            return Results.Ok(new
+            {
+                activity = new
+                {
+                    maxPts           = 25,
+                    commitMultiplier = s.CommitMultiplier,
+                    commitCap        = s.CommitCap,
+                    qualitySaturate  = s.QualitySaturate,
+                    qualityCap       = s.QualityCap,
+                },
+                diversity = new
+                {
+                    maxPts        = 20,
+                    langPointEach = s.LangPointEach,
+                    langCap       = s.LangCap,
+                    domainCap     = s.DomainCap,
+                    domainWeights = s.DomainWeights,
+                },
+                leadership = new
+                {
+                    maxPts          = 25,
+                    followersSaturate = s.FollowersSaturate,
+                    followersCap    = s.FollowersCap,
+                    prCreatedPts    = s.PrCreatedPts,
+                    prMergedPts     = s.PrMergedPts,
+                    reviewPts       = s.ReviewPts,
+                    colaborCap      = s.ColaborCap,
+                },
+                seniority = new
+                {
+                    maxPts      = 15,
+                    activeYearPts = s.ActiveYearPts,
+                    cap         = s.AntiguidadeCap,
+                },
+                originality = new
+                {
+                    maxPts        = 15,
+                    repoPts       = s.RepoPts,
+                    repoCap       = s.RepoCap,
+                    starsSaturate = s.StarsSaturate,
+                    starsCap      = s.StarsCap,
+                },
+            });
+        })
+        .WithTags("Rules")
+        .WithName("GetScoringRules")
+        .WithSummary("Get current scoring rules configuration")
+        .AllowAnonymous();
+
+        return app;
+    }
+}

@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GitArmy.API/GitArmy.API.csproj" />
+    <Project Path="src/GitArmy.Application/GitArmy.Application.csproj" />
+    <Project Path="src/GitArmy.Domain/GitArmy.Domain.csproj" />
+    <Project Path="src/GitArmy.Infrastructure/GitArmy.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GitArmy.API.Tests/GitArmy.API.Tests.csproj" />
+    <Project Path="tests/GitArmy.Application.Tests/GitArmy.Application.Tests.csproj" />
+    <Project Path="tests/GitArmy.Domain.Tests/GitArmy.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

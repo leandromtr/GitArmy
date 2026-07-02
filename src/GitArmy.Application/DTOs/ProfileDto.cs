@@ -1,0 +1,26 @@
+namespace GitArmy.Application.DTOs;
+
+public record ProfileDto(
+    string Username,
+    int Score,
+    int AccountAgeYears,
+    int UniqueLanguages,
+    int Followers,
+    int PublicRepos,
+    int TotalCommitsLastYear,
+    int SubstitutionYear,
+    string ProfileName,
+    string AgiThreatLevel,
+    string FormationTier,
+    string FormationShape,
+    string TerrainTier,
+    string TerrainName,
+    int ActivityScore,
+    int DiversityScore,
+    int CollaborationScore,
+    int SeniorityScore,
+    int OriginalityScore,
+    DateTime ProcessedAt,
+    string FormationDescription,
+    string TerrainDescription,
+    string AgiMessage);

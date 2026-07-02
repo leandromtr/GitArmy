@@ -1,0 +1,32 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.userprefs
+
+## Secrets — never commit
+appsettings.Development.json
+appsettings.Production.json
+secrets.json
+*.pfx
+*.p12
+
+## Migrations (generate per environment)
+src/GitArmy.Infrastructure/Persistence/Migrations/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Rider / VS Code
+.idea/
+.vscode/
+*.DotSettings.user
+
+## Next.js / Node
+gitarmy-web/.next/
+gitarmy-web/node_modules/
+gitarmy-web/.env*.local
+gitarmy-web/out/

@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Audit only direct dependencies; transitive vulnerabilities are the upstream package's responsibility -->
+    <NuGetAuditMode>direct</NuGetAuditMode>
+  </PropertyGroup>
+</Project>
