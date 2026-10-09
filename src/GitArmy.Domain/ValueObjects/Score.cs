@@ -2,6 +2,10 @@ namespace GitArmy.Domain.ValueObjects;
 
 public sealed class Score
 {
+    // Incrementar sempre que a fórmula ou as métricas de entrada mudarem: perfis gravados com outra versão
+    // não têm as métricas novas e deixam de ser comparáveis, por isso são reanalisados.
+    public const int CurrentVersion = 4;
+
     public int Value              { get; }
     public int ActivityScore      { get; } // max 25
     public int DiversityScore     { get; } // max 20
@@ -20,7 +24,7 @@ public sealed class Score
     }
 
     public static Score Calculate(
-        int totalCommits,    int totalAdditions,
+        int totalCommits,    int activeWeeks,
         int uniqueLanguages, double domainWeightSum,
         int followers,       int totalPRsCreated,
         int totalPRsMerged,  int reviewsDone,
@@ -28,10 +32,12 @@ public sealed class Score
         int totalStars,      ScoreParameters p)
     {
         // Atividade (max 25)
-        var avgAdd      = totalCommits > 0 ? (double)totalAdditions / totalCommits : 0;
-        var commitScore = Math.Min(totalCommits * p.CommitMultiplier, p.CommitCap);
-        var qualScore   = Math.Min(avgAdd / p.QualitySaturate * p.QualityCap, p.QualityCap);
-        var activityRaw = Math.Min(commitScore + qualScore, 25.0);
+        // Volume de commits + consistência (semanas do último ano com pelo menos 1 contribuição).
+        var commitScore      = Math.Min(totalCommits * p.CommitMultiplier, p.CommitCap);
+        var consistencyScore = p.ConsistencyWeeks > 0
+            ? Math.Min(activeWeeks / p.ConsistencyWeeks * p.ConsistencyCap, p.ConsistencyCap)
+            : 0;
+        var activityRaw = Math.Min(commitScore + consistencyScore, 25.0);
 
         // Diversidade Técnica (max 20)
         var langScore    = Math.Min(uniqueLanguages * p.LangPointEach, p.LangCap);
@@ -49,8 +55,8 @@ public sealed class Score
             p.ColaborCap);
         var leaderRaw  = Math.Min(follScore + colaborRaw, 25.0);
 
-        // Antiguidade (max 15)
-        // Note: activeYears currently proxied as accountAgeYears; replace with GraphQL year-by-year query when available.
+        // Experiência (max 15)
+        // activeYears = anos civis com atividade real (≥ ActiveYearMinContributions contribuições), não a idade da conta.
         var seniorityRaw = Math.Min(activeYears * p.ActiveYearPts, p.AntiguidadeCap);
 
         // Originalidade (max 15)

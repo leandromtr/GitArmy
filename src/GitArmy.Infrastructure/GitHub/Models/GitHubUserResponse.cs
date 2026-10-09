@@ -13,13 +13,5 @@ internal record GitHubRepoResponse(
     [property: JsonPropertyName("fork")]             bool Fork,
     [property: JsonPropertyName("stargazers_count")] int StargazersCount);
 
-internal record GitHubEventResponse(
-    [property: JsonPropertyName("type")]       string Type,
-    [property: JsonPropertyName("created_at")] DateTime CreatedAt,
-    [property: JsonPropertyName("payload")]    GitHubPushPayload? Payload);
-
-internal record GitHubPushPayload(
-    [property: JsonPropertyName("size")] int Size);
-
 internal record GitHubSearchResponse(
     [property: JsonPropertyName("total_count")] int TotalCount);

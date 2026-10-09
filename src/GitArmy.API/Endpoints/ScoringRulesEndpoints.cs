@@ -17,8 +17,8 @@ public static class ScoringRulesEndpoints
                     maxPts           = 25,
                     commitMultiplier = s.CommitMultiplier,
                     commitCap        = s.CommitCap,
-                    qualitySaturate  = s.QualitySaturate,
-                    qualityCap       = s.QualityCap,
+                    consistencyWeeks = s.ConsistencyWeeks,
+                    consistencyCap   = s.ConsistencyCap,
                 },
                 diversity = new
                 {
@@ -43,6 +43,7 @@ public static class ScoringRulesEndpoints
                     maxPts      = 15,
                     activeYearPts = s.ActiveYearPts,
                     cap         = s.AntiguidadeCap,
+                    minContributions = s.ActiveYearMinContributions,
                 },
                 originality = new
                 {

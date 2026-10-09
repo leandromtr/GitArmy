@@ -51,9 +51,25 @@ public class ProfileClassifierTests
     [Theory]
     [InlineData(0)]
     [InlineData(2)]
-    public void GetTerrainDescription_LangsLessThan3_ContainsIniciado(int langs)
+    public void GetTerrainDescription_LangsLessThan3_ContainsCurioso(int langs)
     {
-        ProfileClassifier.GetTerrainDescription(langs).Should().Contain("Iniciado");
+        ProfileClassifier.GetTerrainDescription(langs).Should().Contain("Curioso");
+    }
+
+    // O nome do nível e a chave da descrição têm de coincidir; se divergirem, o nível mais baixo
+    // cai na descrição por omissão (a do nível mais alto).
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(5)]
+    [InlineData(7)]
+    [InlineData(10)]
+    public void GetTerrainDescription_MentionsTheTierReturnedByGetTerrainTier(int langs)
+    {
+        var tier = ProfileClassifier.GetTerrainTier(langs);
+
+        ProfileClassifier.GetTerrainDescription(langs).Should().Contain($"<strong>{tier}</strong>");
     }
 
     [Theory]

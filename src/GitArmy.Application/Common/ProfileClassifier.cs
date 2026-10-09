@@ -112,7 +112,7 @@ internal static class ProfileClassifier
 
     public static string GetTerrainTier(int uniqueLanguages) => uniqueLanguages switch
     {
-        < 3  => "Iniciado",
+        < 3  => "Curioso",
         < 5  => "Versátil",
         < 7  => "Adaptável",
         < 10 => "Estratégico",

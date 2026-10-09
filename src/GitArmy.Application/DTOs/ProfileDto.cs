@@ -8,6 +8,8 @@ public record ProfileDto(
     int Followers,
     int PublicRepos,
     int TotalCommitsLastYear,
+    int ActiveWeeksLastYear,
+    int ActiveYears,
     int SubstitutionYear,
     string ProfileName,
     string AgiThreatLevel,

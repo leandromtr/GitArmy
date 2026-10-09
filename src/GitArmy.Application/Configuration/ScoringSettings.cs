@@ -9,8 +9,8 @@ public sealed class ScoringSettings
     // Atividade (max 25)
     public double CommitMultiplier { get; init; } = 0.05;
     public double CommitCap        { get; init; } = 15;
-    public double QualitySaturate  { get; init; } = 200;
-    public double QualityCap       { get; init; } = 10;
+    public double ConsistencyWeeks { get; init; } = 52;
+    public double ConsistencyCap   { get; init; } = 10;
 
     // Diversidade Técnica (max 20)
     public double LangPointEach { get; init; } = 1.0;
@@ -34,9 +34,12 @@ public sealed class ScoringSettings
     public double ReviewPts         { get; init; } = 0.80;
     public double ColaborCap        { get; init; } = 15;
 
-    // Antiguidade (max 15)
+    // Experiência (max 15) — anos civis com atividade real, não a idade da conta
     public double ActiveYearPts  { get; init; } = 1.5;
     public double AntiguidadeCap { get; init; } = 15;
+    // Um ano só conta como "activo" a partir deste nº de contribuições (≈ 1 por mês); com 1 só, um commit
+    // por ano chegava para somar anos.
+    public int ActiveYearMinContributions { get; init; } = 12;
 
     // Originalidade (max 15)
     public double RepoPts       { get; init; } = 1.0;
@@ -48,7 +51,7 @@ public sealed class ScoringSettings
 
     public ScoreParameters ToScoreParameters() => new(
         CommitMultiplier, CommitCap,
-        QualitySaturate,  QualityCap,
+        ConsistencyWeeks, ConsistencyCap,
         LangPointEach,    LangCap,
         DomainCap,        ComputedDomainMaxWeight,
         FollowersSaturate, FollowersCap,

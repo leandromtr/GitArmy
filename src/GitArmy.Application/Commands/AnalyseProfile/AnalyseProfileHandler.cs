@@ -44,19 +44,20 @@ internal sealed class AnalyseProfileHandler : IRequestHandler<AnalyseProfileComm
         var cfg                = _settings.Value;
         var scoreParams        = cfg.ToScoreParameters();
         var accountAgeYears    = (int)((DateTime.UtcNow - githubData.CreatedAt).TotalDays / 365);
+        var activeYears        = githubData.YearlyContributions.Count(c => c >= cfg.ActiveYearMinContributions);
         var normalizedLangs    = ProfileClassifier.NormalizeLanguages(githubData.Languages);
         var domainWeightSum    = ProfileClassifier.GetDomainWeightSum(normalizedLangs, cfg.DomainWeights);
 
         var score = Score.Calculate(
             totalCommits:    githubData.TotalCommitsLastYear,
-            totalAdditions:  0,                            // deferred — requires per-repo stats calls
+            activeWeeks:     githubData.ActiveWeeksLastYear,
             uniqueLanguages: normalizedLangs.Count,
             domainWeightSum: domainWeightSum,
             followers:       githubData.Followers,
             totalPRsCreated: githubData.TotalPRsCreated,
             totalPRsMerged:  githubData.TotalPRsMerged,
             reviewsDone:     0,                            // deferred — requires GraphQL contributions query
-            activeYears:     accountAgeYears,
+            activeYears:     activeYears,
             publicRepos:     githubData.PublicRepos,
             totalStars:      githubData.TotalStars,
             p:               scoreParams);
@@ -74,11 +75,14 @@ internal sealed class AnalyseProfileHandler : IRequestHandler<AnalyseProfileComm
                 followers:           githubData.Followers,
                 publicRepos:         githubData.PublicRepos,
                 totalCommitsLastYear: githubData.TotalCommitsLastYear,
+                activeWeeksLastYear: githubData.ActiveWeeksLastYear,
+                activeYears:         activeYears,
                 totalPRsCreated:     githubData.TotalPRsCreated,
                 totalPRsMerged:      githubData.TotalPRsMerged,
                 totalStars:          githubData.TotalStars,
                 domainWeightSum:     domainWeightSum,
-                substitutionYear:    score.ToSubstitutionYear());
+                substitutionYear:    score.ToSubstitutionYear(),
+                scoreVersion:        Score.CurrentVersion);
         }
         else
         {
@@ -89,11 +93,14 @@ internal sealed class AnalyseProfileHandler : IRequestHandler<AnalyseProfileComm
                 followers:           githubData.Followers,
                 publicRepos:         githubData.PublicRepos,
                 totalCommitsLastYear: githubData.TotalCommitsLastYear,
+                activeWeeksLastYear: githubData.ActiveWeeksLastYear,
+                activeYears:         activeYears,
                 totalPRsCreated:     githubData.TotalPRsCreated,
                 totalPRsMerged:      githubData.TotalPRsMerged,
                 totalStars:          githubData.TotalStars,
                 domainWeightSum:     domainWeightSum,
-                substitutionYear:    score.ToSubstitutionYear());
+                substitutionYear:    score.ToSubstitutionYear(),
+                scoreVersion:        Score.CurrentVersion);
             profile = existing;
         }
 
@@ -112,6 +119,8 @@ internal sealed class AnalyseProfileHandler : IRequestHandler<AnalyseProfileComm
         Followers:           p.Followers,
         PublicRepos:         p.PublicRepos,
         TotalCommitsLastYear: p.TotalCommitsLastYear,
+        ActiveWeeksLastYear: p.ActiveWeeksLastYear,
+        ActiveYears:         p.ActiveYears,
         SubstitutionYear:    p.SubstitutionYear,
         ProfileName:         ProfileClassifier.GetProfileName(p.Score),
         AgiThreatLevel:      ProfileClassifier.GetAgiThreatLevel(p.Score),

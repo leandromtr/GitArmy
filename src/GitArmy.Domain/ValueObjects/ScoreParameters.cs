@@ -2,7 +2,7 @@ namespace GitArmy.Domain.ValueObjects;
 
 public sealed record ScoreParameters(
     double CommitMultiplier, double CommitCap,
-    double QualitySaturate,  double QualityCap,
+    double ConsistencyWeeks, double ConsistencyCap,
     double LangPointEach,    double LangCap,
     double DomainCap,        double DomainMaxWeight,
     double FollowersSaturate, double FollowersCap,

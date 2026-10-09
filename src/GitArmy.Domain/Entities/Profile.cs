@@ -10,11 +10,14 @@ public class Profile
     public int Followers            { get; private set; }
     public int PublicRepos          { get; private set; }
     public int TotalCommitsLastYear { get; private set; }
+    public int ActiveWeeksLastYear  { get; private set; }
+    public int ActiveYears          { get; private set; }
     public int TotalPRsCreated      { get; private set; }
     public int TotalPRsMerged       { get; private set; }
     public int TotalStars           { get; private set; }
     public double DomainWeightSum   { get; private set; }
     public int SubstitutionYear     { get; private set; }
+    public int ScoreVersion         { get; private set; }
     public DateTime ProcessedAt     { get; private set; }
 
     private Profile() { }
@@ -27,11 +30,14 @@ public class Profile
         int followers,
         int publicRepos,
         int totalCommitsLastYear,
+        int activeWeeksLastYear,
+        int activeYears,
         int totalPRsCreated,
         int totalPRsMerged,
         int totalStars,
         double domainWeightSum,
-        int substitutionYear)
+        int substitutionYear,
+        int scoreVersion)
     {
         return new Profile
         {
@@ -43,11 +49,14 @@ public class Profile
             Followers           = followers,
             PublicRepos         = publicRepos,
             TotalCommitsLastYear = totalCommitsLastYear,
+            ActiveWeeksLastYear = activeWeeksLastYear,
+            ActiveYears         = activeYears,
             TotalPRsCreated     = totalPRsCreated,
             TotalPRsMerged      = totalPRsMerged,
             TotalStars          = totalStars,
             DomainWeightSum     = domainWeightSum,
             SubstitutionYear    = substitutionYear,
+            ScoreVersion        = scoreVersion,
             ProcessedAt         = DateTime.UtcNow,
         };
     }
@@ -59,11 +68,14 @@ public class Profile
         int followers,
         int publicRepos,
         int totalCommitsLastYear,
+        int activeWeeksLastYear,
+        int activeYears,
         int totalPRsCreated,
         int totalPRsMerged,
         int totalStars,
         double domainWeightSum,
-        int substitutionYear)
+        int substitutionYear,
+        int scoreVersion)
     {
         Score               = score;
         AccountAgeYears     = accountAgeYears;
@@ -71,11 +83,22 @@ public class Profile
         Followers           = followers;
         PublicRepos         = publicRepos;
         TotalCommitsLastYear = totalCommitsLastYear;
+        ActiveWeeksLastYear = activeWeeksLastYear;
+        ActiveYears         = activeYears;
         TotalPRsCreated     = totalPRsCreated;
         TotalPRsMerged      = totalPRsMerged;
         TotalStars          = totalStars;
         DomainWeightSum     = domainWeightSum;
         SubstitutionYear    = substitutionYear;
+        ScoreVersion        = scoreVersion;
         ProcessedAt         = DateTime.UtcNow;
+    }
+
+    // Recalcula só o resultado a partir das métricas já guardadas (ex.: regras de pontuação alteradas),
+    // sem tocar nos dados do GitHub nem na data da análise.
+    public void Rescore(int score, int substitutionYear)
+    {
+        Score            = score;
+        SubstitutionYear = substitutionYear;
     }
 }

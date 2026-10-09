@@ -1,4 +1,5 @@
 using FluentValidation;
+using GitArmy.Application.Interfaces;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,18 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
                 Errors = validationException.Errors
                     .GroupBy(e => e.PropertyName)
                     .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray())
+            }, cancellationToken);
+            return true;
+        }
+
+        if (exception is GitHubUnavailableException)
+        {
+            _logger.LogWarning(exception, "GitHub unavailable");
+            context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+            await context.Response.WriteAsJsonAsync(new ProblemDetails
+            {
+                Title = exception.Message,
+                Status = StatusCodes.Status503ServiceUnavailable
             }, cancellationToken);
             return true;
         }

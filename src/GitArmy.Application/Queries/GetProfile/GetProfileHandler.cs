@@ -37,33 +37,48 @@ internal sealed class GetProfileHandler : IRequestHandler<GetProfileQuery, Profi
         if (profile is null)
             return null;
 
+        // Perfil gravado com outra versão da fórmula: não tem as métricas atuais, por isso é tratado como
+        // inexistente e o cliente volta a analisá-lo (POST /analyse).
+        if (profile.ScoreVersion != Score.CurrentVersion)
+            return null;
+
         var scoreParams = _settings.Value.ToScoreParameters();
 
         var score = Score.Calculate(
             totalCommits:    profile.TotalCommitsLastYear,
-            totalAdditions:  0,
+            activeWeeks:     profile.ActiveWeeksLastYear,
             uniqueLanguages: profile.UniqueLanguages,
             domainWeightSum: profile.DomainWeightSum,
             followers:       profile.Followers,
             totalPRsCreated: profile.TotalPRsCreated,
             totalPRsMerged:  profile.TotalPRsMerged,
             reviewsDone:     0,
-            activeYears:     profile.AccountAgeYears,
+            activeYears:     profile.ActiveYears,
             publicRepos:     profile.PublicRepos,
             totalStars:      profile.TotalStars,
             p:               scoreParams);
 
+        // As regras podem ter mudado desde a análise: o total, o ano e os textos saem do mesmo cálculo dos
+        // componentes e o valor guardado (usado no ranking) é atualizado para não divergir.
+        if (score.Value != profile.Score || score.ToSubstitutionYear() != profile.SubstitutionYear)
+        {
+            profile.Rescore(score.Value, score.ToSubstitutionYear());
+            await _profileRepository.UpsertAsync(profile, cancellationToken);
+        }
+
         var dto = new ProfileDto(
             Username:            profile.Username,
-            Score:               profile.Score,
+            Score:               score.Value,
             AccountAgeYears:     profile.AccountAgeYears,
             UniqueLanguages:     profile.UniqueLanguages,
             Followers:           profile.Followers,
             PublicRepos:         profile.PublicRepos,
             TotalCommitsLastYear: profile.TotalCommitsLastYear,
-            SubstitutionYear:    profile.SubstitutionYear,
-            ProfileName:         ProfileClassifier.GetProfileName(profile.Score),
-            AgiThreatLevel:      ProfileClassifier.GetAgiThreatLevel(profile.Score),
+            ActiveWeeksLastYear: profile.ActiveWeeksLastYear,
+            ActiveYears:         profile.ActiveYears,
+            SubstitutionYear:    score.ToSubstitutionYear(),
+            ProfileName:         ProfileClassifier.GetProfileName(score.Value),
+            AgiThreatLevel:      ProfileClassifier.GetAgiThreatLevel(score.Value),
             FormationTier:       ProfileClassifier.GetFormationTier(profile.AccountAgeYears),
             FormationShape:      ProfileClassifier.GetFormationShape(profile.AccountAgeYears),
             TerrainTier:         ProfileClassifier.GetTerrainTier(profile.UniqueLanguages),
@@ -76,7 +91,7 @@ internal sealed class GetProfileHandler : IRequestHandler<GetProfileQuery, Profi
             ProcessedAt:         profile.ProcessedAt,
             FormationDescription: ProfileClassifier.GetFormationDescription(profile.AccountAgeYears),
             TerrainDescription:  ProfileClassifier.GetTerrainDescription(profile.UniqueLanguages),
-            AgiMessage:          ProfileClassifier.GetAgiMessage(profile.Score));
+            AgiMessage:          ProfileClassifier.GetAgiMessage(score.Value));
 
         _cacheService.Set(cacheKey, dto, TimeSpan.FromHours(1));
         return dto;

@@ -34,6 +34,8 @@ internal sealed class ProfileRepository : IProfileRepository
     {
         return await _context.Profiles
             .AsNoTracking()
+            // Só perfis pontuados com a fórmula atual: scores de versões antigas não são comparáveis.
+            .Where(p => p.ScoreVersion == GitArmy.Domain.ValueObjects.Score.CurrentVersion)
             .OrderByDescending(p => p.Score)
             .ThenBy(p => p.SubstitutionYear)
             .Take(count)
