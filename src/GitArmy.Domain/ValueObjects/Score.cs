@@ -79,5 +79,15 @@ public sealed class Score
             originality: (int)Math.Round(originalRaw));
     }
 
-    public int ToSubstitutionYear() => 2028 + (int)Math.Round(Value / 100.0 * 19.0);
+    // Linha do tempo da substituição: a singularidade (AGI) chega em 2040 e o ano estimado de cada perfil
+    // fica antes dela, entre 2027 (score 0) e 2038 (score 100). É a única fonte destes valores: a API
+    // expõe-nos (ProfileDto e /api/scoring-rules) e o front não os repete.
+    public const int SingularityYear        = 2040;
+    public const int SubstitutionBaseYear   = 2027;
+    public const int SubstitutionSpanYears  = 11;
+
+    public static int SubstitutionYearFor(int score) =>
+        SubstitutionBaseYear + (int)Math.Round(Math.Clamp(score, 0, 100) / 100.0 * SubstitutionSpanYears);
+
+    public int ToSubstitutionYear() => SubstitutionYearFor(Value);
 }

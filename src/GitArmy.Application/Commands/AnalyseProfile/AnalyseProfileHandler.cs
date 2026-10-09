@@ -122,6 +122,7 @@ internal sealed class AnalyseProfileHandler : IRequestHandler<AnalyseProfileComm
         ActiveWeeksLastYear: p.ActiveWeeksLastYear,
         ActiveYears:         p.ActiveYears,
         SubstitutionYear:    p.SubstitutionYear,
+        SingularityYear:     Score.SingularityYear,
         ProfileName:         ProfileClassifier.GetProfileName(p.Score),
         AgiThreatLevel:      ProfileClassifier.GetAgiThreatLevel(p.Score),
         FormationTier:       ProfileClassifier.GetFormationTier(p.AccountAgeYears),

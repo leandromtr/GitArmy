@@ -1,4 +1,5 @@
 using GitArmy.Application.Configuration;
+using GitArmy.Domain.ValueObjects;
 using Microsoft.Extensions.Options;
 
 namespace GitArmy.API.Endpoints;
@@ -52,6 +53,12 @@ public static class ScoringRulesEndpoints
                     repoCap       = s.RepoCap,
                     starsSaturate = s.StarsSaturate,
                     starsCap      = s.StarsCap,
+                },
+                timeline = new
+                {
+                    baseYear        = Score.SubstitutionBaseYear,
+                    spanYears       = Score.SubstitutionSpanYears,
+                    singularityYear = Score.SingularityYear,
                 },
             });
         })

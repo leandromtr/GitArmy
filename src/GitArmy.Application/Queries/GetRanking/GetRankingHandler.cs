@@ -1,6 +1,7 @@
 using GitArmy.Application.Common;
 using GitArmy.Application.DTOs;
 using GitArmy.Domain.Interfaces;
+using GitArmy.Domain.ValueObjects;
 using MediatR;
 
 namespace GitArmy.Application.Queries.GetRanking;
@@ -23,7 +24,8 @@ internal sealed class GetRankingHandler : IRequestHandler<GetRankingQuery, IRead
                 Position: i + 1,
                 Username: p.Username,
                 ProfileName: ProfileClassifier.GetProfileName(p.Score),
-                SubstitutionYear: p.SubstitutionYear,
+                // Calculado a partir do score (e não do valor guardado) para refletir sempre a linha do tempo atual.
+                SubstitutionYear: Score.SubstitutionYearFor(p.Score),
                 ProcessedAt: p.ProcessedAt))
             .ToList();
     }

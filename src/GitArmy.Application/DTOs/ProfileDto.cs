@@ -11,6 +11,7 @@ public record ProfileDto(
     int ActiveWeeksLastYear,
     int ActiveYears,
     int SubstitutionYear,
+    int SingularityYear,
     string ProfileName,
     string AgiThreatLevel,
     string FormationTier,

@@ -77,6 +77,7 @@ internal sealed class GetProfileHandler : IRequestHandler<GetProfileQuery, Profi
             ActiveWeeksLastYear: profile.ActiveWeeksLastYear,
             ActiveYears:         profile.ActiveYears,
             SubstitutionYear:    score.ToSubstitutionYear(),
+            SingularityYear:     Score.SingularityYear,
             ProfileName:         ProfileClassifier.GetProfileName(score.Value),
             AgiThreatLevel:      ProfileClassifier.GetAgiThreatLevel(score.Value),
             FormationTier:       ProfileClassifier.GetFormationTier(profile.AccountAgeYears),

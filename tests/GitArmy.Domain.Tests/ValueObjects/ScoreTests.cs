@@ -100,4 +100,44 @@ public class ScoreTests
 
         high.Should().BeGreaterThan(low);
     }
+
+    [Fact]
+    public void SingularityYear_Is2040()
+    {
+        Score.SingularityYear.Should().Be(2040);
+    }
+
+    [Fact]
+    public void SubstitutionYearFor_SpansFrom2027To2038()
+    {
+        Score.SubstitutionYearFor(0).Should().Be(2027);
+        Score.SubstitutionYearFor(100).Should().Be(2038);
+    }
+
+    [Fact]
+    public void SubstitutionYearFor_NeverReachesTheSingularity()
+    {
+        for (var score = 0; score <= 100; score++)
+            Score.SubstitutionYearFor(score).Should().BeLessThan(Score.SingularityYear);
+    }
+
+    [Fact]
+    public void SubstitutionYearFor_NeverDecreasesAsScoreGrows()
+    {
+        var previous = Score.SubstitutionYearFor(0);
+        for (var score = 1; score <= 100; score++)
+        {
+            var year = Score.SubstitutionYearFor(score);
+            year.Should().BeGreaterThanOrEqualTo(previous);
+            previous = year;
+        }
+    }
+
+    [Theory]
+    [InlineData(-10)]
+    [InlineData(250)]
+    public void SubstitutionYearFor_ClampsOutOfRangeScores(int score)
+    {
+        Score.SubstitutionYearFor(score).Should().BeInRange(2027, 2038);
+    }
 }

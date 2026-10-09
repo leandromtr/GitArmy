@@ -126,7 +126,7 @@ public class AnalyseProfileHandlerTests
             Username: "cached", Score: 70, AccountAgeYears: 3, UniqueLanguages: 2,
             Followers: 10, PublicRepos: 5, TotalCommitsLastYear: 50,
             ActiveWeeksLastYear: 20, ActiveYears: 3,
-            SubstitutionYear: 2043, ProfileName: "name", AgiThreatLevel: "ABORTED",
+            SubstitutionYear: 2035, SingularityYear: 2040, ProfileName: "name", AgiThreatLevel: "ABORTED",
             FormationTier: "Calejado", FormationShape: "Cunha de Massa Crescente",
             TerrainTier: "Versátil", TerrainName: "Controlado",
             ActivityScore: 5, DiversityScore: 3, CollaborationScore: 8,
