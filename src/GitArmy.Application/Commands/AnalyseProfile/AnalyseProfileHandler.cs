@@ -45,21 +45,39 @@ internal sealed class AnalyseProfileHandler : IRequestHandler<AnalyseProfileComm
         var scoreParams        = cfg.ToScoreParameters();
         var accountAgeYears    = (int)((DateTime.UtcNow - githubData.CreatedAt).TotalDays / 365);
         var activeYears        = githubData.YearlyContributions.Count(c => c >= cfg.ActiveYearMinContributions);
-        var normalizedLangs    = ProfileClassifier.NormalizeLanguages(githubData.Languages);
-        var domainWeightSum    = ProfileClassifier.GetDomainWeightSum(normalizedLangs, cfg.DomainWeights);
+
+        // Só contam os repositórios com código real: vazios e hello-worlds não somam repos nem linguagens.
+        var substantialRepos = githubData.Repos
+            .Where(r => !r.IsEmpty && r.LanguageBytes.Values.Sum() >= cfg.RepoMinCodeBytes)
+            .ToList();
+
+        // Uma linguagem só conta com volume mínimo de código somado nesses repositórios.
+        var languages = substantialRepos
+            .SelectMany(r => r.LanguageBytes)
+            .GroupBy(kv => kv.Key)
+            .Select(g => (Name: g.Key, Bytes: g.Sum(kv => kv.Value)))
+            .Where(l => l.Bytes >= cfg.LangMinBytes)
+            .OrderByDescending(l => l.Bytes)
+            .Select(l => l.Name)
+            .ToList();
+
+        var countedLanguages = ProfileClassifier.NormalizeLanguages(languages);
+        var domainWeightSum  = ProfileClassifier.GetDomainWeightSum(languages, cfg.DomainWeights);
+        var publicRepos      = substantialRepos.Count;
+        var totalStars       = githubData.Repos.Sum(r => r.Stars); // estrelas de todos os repos próprios, também os só de documentação
 
         var score = Score.Calculate(
             totalCommits:    githubData.TotalCommitsLastYear,
             activeWeeks:     githubData.ActiveWeeksLastYear,
-            uniqueLanguages: normalizedLangs.Count,
+            uniqueLanguages: countedLanguages.Count,
             domainWeightSum: domainWeightSum,
             followers:       githubData.Followers,
             totalPRsCreated: githubData.TotalPRsCreated,
             totalPRsMerged:  githubData.TotalPRsMerged,
             reviewsDone:     0,                            // deferred — requires GraphQL contributions query
             activeYears:     activeYears,
-            publicRepos:     githubData.PublicRepos,
-            totalStars:      githubData.TotalStars,
+            publicRepos:     publicRepos,
+            totalStars:      totalStars,
             p:               scoreParams);
 
         var existing = await _profileRepository.GetByUsernameAsync(username.Value, cancellationToken);
@@ -71,15 +89,15 @@ internal sealed class AnalyseProfileHandler : IRequestHandler<AnalyseProfileComm
                 username:            username.Value,
                 score:               score.Value,
                 accountAgeYears:     accountAgeYears,
-                uniqueLanguages:     normalizedLangs.Count,
+                uniqueLanguages:     countedLanguages.Count,
                 followers:           githubData.Followers,
-                publicRepos:         githubData.PublicRepos,
+                publicRepos:         publicRepos,
                 totalCommitsLastYear: githubData.TotalCommitsLastYear,
                 activeWeeksLastYear: githubData.ActiveWeeksLastYear,
                 activeYears:         activeYears,
                 totalPRsCreated:     githubData.TotalPRsCreated,
                 totalPRsMerged:      githubData.TotalPRsMerged,
-                totalStars:          githubData.TotalStars,
+                totalStars:          totalStars,
                 domainWeightSum:     domainWeightSum,
                 substitutionYear:    score.ToSubstitutionYear(),
                 scoreVersion:        Score.CurrentVersion);
@@ -89,15 +107,15 @@ internal sealed class AnalyseProfileHandler : IRequestHandler<AnalyseProfileComm
             existing.UpdateScores(
                 score:               score.Value,
                 accountAgeYears:     accountAgeYears,
-                uniqueLanguages:     normalizedLangs.Count,
+                uniqueLanguages:     countedLanguages.Count,
                 followers:           githubData.Followers,
-                publicRepos:         githubData.PublicRepos,
+                publicRepos:         publicRepos,
                 totalCommitsLastYear: githubData.TotalCommitsLastYear,
                 activeWeeksLastYear: githubData.ActiveWeeksLastYear,
                 activeYears:         activeYears,
                 totalPRsCreated:     githubData.TotalPRsCreated,
                 totalPRsMerged:      githubData.TotalPRsMerged,
-                totalStars:          githubData.TotalStars,
+                totalStars:          totalStars,
                 domainWeightSum:     domainWeightSum,
                 substitutionYear:    score.ToSubstitutionYear(),
                 scoreVersion:        Score.CurrentVersion);

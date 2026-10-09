@@ -4,7 +4,7 @@ public sealed class Score
 {
     // Incrementar sempre que a fórmula ou as métricas de entrada mudarem: perfis gravados com outra versão
     // não têm as métricas novas e deixam de ser comparáveis, por isso são reanalisados.
-    public const int CurrentVersion = 4;
+    public const int CurrentVersion = 5;
 
     public int Value              { get; }
     public int ActivityScore      { get; } // max 25
@@ -32,8 +32,11 @@ public sealed class Score
         int totalStars,      ScoreParameters p)
     {
         // Atividade (max 25)
-        // Volume de commits + consistência (semanas do último ano com pelo menos 1 contribuição).
-        var commitScore      = Math.Min(totalCommits * p.CommitMultiplier, p.CommitCap);
+        // Volume de commits (raiz quadrada: cada commit extra vale menos, sem teto precoce) + consistência
+        // (semanas do último ano com pelo menos 1 contribuição).
+        var commitScore      = p.CommitSaturate > 0
+            ? p.CommitCap * Math.Sqrt(Math.Min(Math.Max(totalCommits, 0) / p.CommitSaturate, 1.0))
+            : 0;
         var consistencyScore = p.ConsistencyWeeks > 0
             ? Math.Min(activeWeeks / p.ConsistencyWeeks * p.ConsistencyCap, p.ConsistencyCap)
             : 0;
@@ -46,13 +49,12 @@ public sealed class Score
             : 0;
         var diversityRaw = Math.Min(langScore + domainScore, 20.0);
 
-        // Liderança / Colaboração (max 25)
-        var follScore  = Math.Min(
-            Math.Log10(followers + 1) / Math.Log10(p.FollowersSaturate + 1) * p.FollowersCap,
-            p.FollowersCap);
-        var colaborRaw = Math.Min(
+        // Liderança / Colaboração (max 25) — escala logarítmica: os primeiros PRs / seguidores valem mais
+        // e o teto só se atinge com volumes realmente altos.
+        var follScore  = LogScale(followers, p.FollowersSaturate) * p.FollowersCap;
+        var colaborRaw = LogScale(
             totalPRsCreated * p.PrCreatedPts + totalPRsMerged * p.PrMergedPts + reviewsDone * p.ReviewPts,
-            p.ColaborCap);
+            p.ColaborSaturate) * p.ColaborCap;
         var leaderRaw  = Math.Min(follScore + colaborRaw, 25.0);
 
         // Experiência (max 15)
@@ -60,10 +62,9 @@ public sealed class Score
         var seniorityRaw = Math.Min(activeYears * p.ActiveYearPts, p.AntiguidadeCap);
 
         // Originalidade (max 15)
-        var repoScore   = Math.Min(publicRepos * p.RepoPts, p.RepoCap);
-        var starsScore  = Math.Min(
-            Math.Log10(totalStars + 1) / Math.Log10(p.StarsSaturate + 1) * p.StarsCap,
-            p.StarsCap);
+        // publicRepos = repositórios próprios, não-fork e com código real (ver RepoMinCodeBytes).
+        var repoScore   = LogScale(publicRepos, p.RepoSaturate) * p.RepoCap;
+        var starsScore  = LogScale(totalStars, p.StarsSaturate) * p.StarsCap;
         var originalRaw = Math.Min(repoScore + starsScore, 15.0);
 
         var total = Math.Clamp(
@@ -78,6 +79,10 @@ public sealed class Score
             seniority:   (int)Math.Round(seniorityRaw),
             originality: (int)Math.Round(originalRaw));
     }
+
+    // Escala logarítmica normalizada: 0 → 0 e `saturate` → 1 (acima disso fica em 1).
+    private static double LogScale(double value, double saturate) =>
+        saturate <= 0 ? 0 : Math.Min(Math.Log10(Math.Max(value, 0) + 1) / Math.Log10(saturate + 1), 1.0);
 
     // Linha do tempo da substituição: a singularidade (AGI) chega em 2040 e o ano estimado de cada perfil
     // fica antes dela, entre 2027 (score 0) e 2038 (score 100). É a única fonte destes valores: a API

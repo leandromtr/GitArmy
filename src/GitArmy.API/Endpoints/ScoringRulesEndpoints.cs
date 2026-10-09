@@ -16,7 +16,7 @@ public static class ScoringRulesEndpoints
                 activity = new
                 {
                     maxPts           = 25,
-                    commitMultiplier = s.CommitMultiplier,
+                    commitSaturate   = s.CommitSaturate,
                     commitCap        = s.CommitCap,
                     consistencyWeeks = s.ConsistencyWeeks,
                     consistencyCap   = s.ConsistencyCap,
@@ -28,6 +28,8 @@ public static class ScoringRulesEndpoints
                     langCap       = s.LangCap,
                     domainCap     = s.DomainCap,
                     domainWeights = s.DomainWeights,
+                    domainSaturateCount = s.DomainSaturateCount,
+                    langMinBytes  = s.LangMinBytes,
                 },
                 leadership = new
                 {
@@ -37,6 +39,7 @@ public static class ScoringRulesEndpoints
                     prCreatedPts    = s.PrCreatedPts,
                     prMergedPts     = s.PrMergedPts,
                     reviewPts       = s.ReviewPts,
+                    colaborSaturate = s.ColaborSaturate,
                     colaborCap      = s.ColaborCap,
                 },
                 seniority = new
@@ -49,8 +52,9 @@ public static class ScoringRulesEndpoints
                 originality = new
                 {
                     maxPts        = 15,
-                    repoPts       = s.RepoPts,
+                    repoSaturate  = s.RepoSaturate,
                     repoCap       = s.RepoCap,
+                    repoMinCodeBytes = s.RepoMinCodeBytes,
                     starsSaturate = s.StarsSaturate,
                     starsCap      = s.StarsCap,
                 },

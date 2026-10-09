@@ -9,28 +9,40 @@ internal static class ProfileClassifier
             ["R"]          = "ml_ai",
             ["Julia"]      = "ml_ai",
             ["MATLAB"]     = "ml_ai",
+            ["Jupyter Notebook"] = "ml_ai",
             // Frontend
             ["JavaScript"] = "frontend",
             ["TypeScript"] = "frontend",
             ["HTML"]       = "frontend",
             ["CSS"]        = "frontend",
+            ["SCSS"]       = "frontend",
+            ["Sass"]       = "frontend",
+            ["Less"]       = "frontend",
+            ["Vue"]        = "frontend",
+            ["Svelte"]     = "frontend",
             ["Dart"]       = "frontend",
             // Backend
             ["C#"]         = "backend",
             ["Java"]       = "backend",
-            ["Python"]     = "backend", // overridden to ml_ai when R / Julia / MATLAB also present
+            ["Python"]     = "backend", // overridden to ml_ai when an ML indicator (R / Julia / MATLAB / Jupyter) is present
             ["PHP"]        = "backend",
             ["Ruby"]       = "backend",
             ["Kotlin"]     = "backend",
             ["Scala"]      = "backend",
             ["Swift"]      = "backend",
             ["Elixir"]     = "backend",
+            ["Lua"]        = "backend",
+            ["Perl"]       = "backend",
+            ["Groovy"]     = "backend",
+            ["Objective-C"] = "backend",
             // DevOps
             ["Shell"]      = "devops",
             ["Bash"]       = "devops",
             ["PowerShell"] = "devops",
             ["HCL"]        = "devops",
             ["Makefile"]   = "devops",
+            ["Dockerfile"] = "devops",
+            ["Nix"]        = "devops",
             // Systems
             ["C"]          = "systems",
             ["C++"]        = "systems",
@@ -48,32 +60,63 @@ internal static class ProfileClassifier
             ["Erlang"]     = "domain_specific",
             ["Fortran"]    = "domain_specific",
             ["Prolog"]     = "domain_specific",
+            ["OCaml"]      = "domain_specific",
+            ["F#"]         = "domain_specific",
+            ["Clojure"]    = "domain_specific",
         };
 
-    // TypeScript and JavaScript map to the same domain (frontend).
-    // When both are present, remove TypeScript so unique language count treats them as one.
+    // Linguagens de uma mesma família contam como UMA só no total de linguagens
+    // (JS/TS são o mesmo ecossistema; HTML e as linguagens de estilo são marcação/estilo da mesma camada).
+    private static readonly string[][] LanguageFamilies =
+    [
+        ["JavaScript", "TypeScript"],
+        ["HTML", "CSS", "SCSS", "Sass", "Less"],
+    ];
+
+    // Build, configuração e notebooks não são linguagens "de programação" para efeito de contagem
+    // (continuam a sinalizar o domínio: Dockerfile → devops, Jupyter → ml_ai).
+    private static readonly HashSet<string> NotCounted = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Makefile", "Dockerfile", "CMake", "Batchfile", "Jupyter Notebook",
+    };
+
+    // Devolve as linguagens a contar no total: sem build/config/notebooks e com cada família reduzida a uma.
     public static IReadOnlyList<string> NormalizeLanguages(IReadOnlyList<string> languages)
     {
-        bool hasJs = languages.Any(l => l.Equals("JavaScript", StringComparison.OrdinalIgnoreCase));
-        bool hasTs = languages.Any(l => l.Equals("TypeScript", StringComparison.OrdinalIgnoreCase));
+        var result = new List<string>();
+        var seenFamilies = new HashSet<int>();
 
-        if (hasJs && hasTs)
-            return languages.Where(l => !l.Equals("TypeScript", StringComparison.OrdinalIgnoreCase)).ToList();
+        foreach (var lang in languages)
+        {
+            if (NotCounted.Contains(lang))
+                continue;
 
-        return languages;
+            var family = Array.FindIndex(LanguageFamilies,
+                f => f.Any(m => m.Equals(lang, StringComparison.OrdinalIgnoreCase)));
+
+            if (family >= 0 && !seenFamilies.Add(family))
+                continue; // já contámos um membro desta família
+
+            result.Add(lang);
+        }
+
+        return result;
     }
 
+    // Recebe as linguagens "cruas" (já filtradas por volume de código), não as normalizadas:
+    // o sinal de ML (Jupyter, R, Julia, MATLAB) e os domínios de build/config precisam de as ver.
     public static double GetDomainWeightSum(
-        IReadOnlyList<string> normalizedLanguages,
+        IReadOnlyList<string> languages,
         IDictionary<string, double> domainWeights)
     {
-        bool hasMlIndicator = normalizedLanguages.Any(l =>
+        bool hasMlIndicator = languages.Any(l =>
             l.Equals("R", StringComparison.OrdinalIgnoreCase) ||
             l.Equals("Julia", StringComparison.OrdinalIgnoreCase) ||
-            l.Equals("MATLAB", StringComparison.OrdinalIgnoreCase));
+            l.Equals("MATLAB", StringComparison.OrdinalIgnoreCase) ||
+            l.Equals("Jupyter Notebook", StringComparison.OrdinalIgnoreCase));
 
         var covered = new HashSet<string>();
-        foreach (var lang in normalizedLanguages)
+        foreach (var lang in languages)
         {
             if (!LanguageDomainMap.TryGetValue(lang, out var domain))
                 continue;

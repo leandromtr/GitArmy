@@ -1,5 +1,6 @@
 using FluentAssertions;
 using GitArmy.Application.Common;
+using GitArmy.Application.Configuration;
 
 namespace GitArmy.Application.Tests.Common;
 
@@ -102,6 +103,66 @@ public class ProfileClassifierTests
     public void GetTerrainDescription_Langs10OrMore_ContainsSistemico(int langs)
     {
         ProfileClassifier.GetTerrainDescription(langs).Should().Contain("Sistémico");
+    }
+
+    // ── NormalizeLanguages ────────────────────────────────────────────────────
+
+    [Fact]
+    public void NormalizeLanguages_JavaScriptAndTypeScript_CountAsOne()
+    {
+        ProfileClassifier.NormalizeLanguages(["JavaScript", "TypeScript"]).Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void NormalizeLanguages_MarkupAndStyleLanguages_CountAsOne()
+    {
+        ProfileClassifier.NormalizeLanguages(["HTML", "CSS", "SCSS", "Less"]).Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void NormalizeLanguages_BuildConfigAndNotebooks_AreNotCounted()
+    {
+        ProfileClassifier.NormalizeLanguages(["Makefile", "Dockerfile", "Jupyter Notebook", "Python"])
+            .Should().Equal("Python");
+    }
+
+    [Fact]
+    public void NormalizeLanguages_UnrelatedLanguages_AreAllKept()
+    {
+        ProfileClassifier.NormalizeLanguages(["C#", "Go", "Rust", "JavaScript"]).Should().HaveCount(4);
+    }
+
+    // ── GetDomainWeightSum ────────────────────────────────────────────────────
+
+    private static readonly IDictionary<string, double> Weights = new ScoringSettings().DomainWeights;
+
+    [Fact]
+    public void GetDomainWeightSum_PythonAlone_IsBackend()
+    {
+        ProfileClassifier.GetDomainWeightSum(["Python"], Weights).Should().Be(Weights["backend"]);
+    }
+
+    [Theory]
+    [InlineData("Jupyter Notebook")]
+    [InlineData("R")]
+    [InlineData("Julia")]
+    [InlineData("MATLAB")]
+    public void GetDomainWeightSum_PythonWithAnMlIndicator_IsMachineLearning(string indicator)
+    {
+        ProfileClassifier.GetDomainWeightSum(["Python", indicator], Weights).Should().Be(Weights["ml_ai"]);
+    }
+
+    [Fact]
+    public void GetDomainWeightSum_Dockerfile_CountsTowardsDevOps()
+    {
+        ProfileClassifier.GetDomainWeightSum(["Dockerfile"], Weights).Should().Be(Weights["devops"]);
+    }
+
+    [Fact]
+    public void GetDomainWeightSum_CountsEachDomainOnce()
+    {
+        ProfileClassifier.GetDomainWeightSum(["JavaScript", "TypeScript", "HTML", "CSS"], Weights)
+            .Should().Be(Weights["frontend"]);
     }
 
     // ── GetAgiMessage ─────────────────────────────────────────────────────────

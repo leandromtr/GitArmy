@@ -8,10 +8,5 @@ internal record GitHubUserResponse(
     [property: JsonPropertyName("followers")]    int Followers,
     [property: JsonPropertyName("created_at")]   DateTime CreatedAt);
 
-internal record GitHubRepoResponse(
-    [property: JsonPropertyName("language")]         string? Language,
-    [property: JsonPropertyName("fork")]             bool Fork,
-    [property: JsonPropertyName("stargazers_count")] int StargazersCount);
-
 internal record GitHubSearchResponse(
     [property: JsonPropertyName("total_count")] int TotalCount);
